@@ -1,0 +1,86 @@
+---
+title: "Word cloud"
+author: "Sam Chamberlain"
+date: "June 30, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Word cloud for dissertation
+
+Just some standard time wasting to mine what the themes of my research really are. Maybe I'll learn something about what words I use too much as well. Here are the packages we are using...
+
+```{r packages, message=FALSE, warning=FALSE}
+#Load packages
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+```
+
+## Load dissertation file and complete basic data cleaning
+Save your word file to the R directory and load it with the command prompt that follows. For now, re-save your document as a .txt file. Handling .docx will come in revision
+
+```{r load}
+text <- readLines(file.choose())
+```
+
+Now your document is loaded to the global environment as the object *text*. In the next step, we load this as a *Corpus* list that can be cleaned to equivalent strings
+
+```{r corpus}
+docs <- Corpus(VectorSource(text))
+```
+
+Now that the dissertation is loaded as a Corpus list for each page, we can normalize the strings so uppercase letters are converted to lower case, common words are removed, numbers, etc. These transformations use the *tm* package
+
+```{r transformations}
+docs <- tm_map(docs, content_transformer(tolower)) #convert to lower case
+docs <- tm_map(docs, removeNumbers) #remove nums
+docs <- tm_map(docs, removeWords, stopwords("english")) # remove common english
+docs <- tm_map(docs, removePunctuation) #remove punctuation
+docs <- tm_map(docs, stripWhitespace)  #remove extra whitespace
+```
+
+## Build a term document matrix
+This will mine the text and give you the number of occurences for each word. This section will give you the data matrix required for the *wordcloud* function,
+
+```{r text_mine}
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+```
+
+... and here are the ten most common words
+```{r common, echo=FALSE}
+head(d,10)
+```
+
+In my example, the word 'figure' appears in the top ten, which should not be there as it is a consequence of science writing rather than content. Also, 'water table' is split, so let's drop 'table' as well. Change is according to your own analysis. So let's remove that as well and rebuild the matrix.
+
+```{r transformations 2}
+docs <- tm_map(docs, removeWords, c("figure", "table"))
+
+#Now rebuild the matrix
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+```
+
+Let's check it again...
+```{r common_2, echo=FALSE}
+head(d,10)
+```
+
+## Word cloud
+Finally, we can build the cloud using the following code
+```{r wordcloud, fig.width=12, fig.height=8}
+set.seed(1234)
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+```
