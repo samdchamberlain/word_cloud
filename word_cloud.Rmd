@@ -25,7 +25,12 @@ library(RColorBrewer)
 Save your word file to the R directory and load it with the command prompt that follows. For now, re-save your document as a .txt file. Handling .docx will come in revision
 
 ```{r load}
-text <- readLines(file.choose())
+path <- getwd() #get path name
+file <- list.files(pattern = "\\.txt$") #find the .txt file name
+file_path <- paste(path, file, sep="/")
+
+#now read in the txt file
+text <- readLines(file_path) 
 ```
 
 Now your document is loaded to the global environment as the object *text*. In the next step, we load this as a *Corpus* list that can be cleaned to equivalent strings
@@ -37,11 +42,11 @@ docs <- Corpus(VectorSource(text))
 Now that the dissertation is loaded as a Corpus list for each page, we can normalize the strings so uppercase letters are converted to lower case, common words are removed, numbers, etc. These transformations use the *tm* package
 
 ```{r transformations}
+docs <- tm_map(docs, stripWhitespace)  #remove extra whitespace
 docs <- tm_map(docs, content_transformer(tolower)) #convert to lower case
 docs <- tm_map(docs, removeNumbers) #remove nums
 docs <- tm_map(docs, removeWords, stopwords("english")) # remove common english
 docs <- tm_map(docs, removePunctuation) #remove punctuation
-docs <- tm_map(docs, stripWhitespace)  #remove extra whitespace
 ```
 
 ## Build a term document matrix
