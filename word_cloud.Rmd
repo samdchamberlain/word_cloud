@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Word cloud for research
 
-Just some standard time wasting to mine what the themes of my research really are. Maybe I'll learn something about what words I use too much as well. Here are the packages we are using...
+Just some standard time wasting to mine what the themes of my research really are. Maybe I'll learn something about what words I use too much as well. Here are the packages we are using.....
 
 ```{r packages, message=FALSE, warning=FALSE}
 #Load packages
