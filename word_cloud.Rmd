@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Word cloud for dissertation
+## Word cloud for research
 
 Just some standard time wasting to mine what the themes of my research really are. Maybe I'll learn something about what words I use too much as well. Here are the packages we are using...
 
